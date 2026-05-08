@@ -1,0 +1,11 @@
+target/**
+.project
+.classpath
+.settings/
+*.tmp
+*.bak
+*.cache
+/target/
+dependency-reduced-pom.xml
+**/addons.scss
+**/styles.css
