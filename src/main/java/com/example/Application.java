@@ -1,48 +1,50 @@
 package com.example;
 
-import org.eclipse.jetty.ee10.webapp.MetaInfConfiguration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.util.resource.ResourceFactory;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.eclipse.jetty.ee10.webapp.MetaInfConfiguration;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.util.resource.ResourceFactory;
+
+import io.javalin.Javalin;
+
 public class Application {
 
     public static void main(String[] args) throws Exception {
-        // Jetty's classpath scanner throws on non-existent entries - strip them first.
         fixClasspath();
 
-        Server server = new Server();
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(8080);
-        server.addConnector(connector);
+        Javalin javalin = Javalin.create(config -> {
+            config.jetty.modifyServer(server -> {
+                // Javalin's attachHandler() detects a Handler.Sequence and appends its own
+                // ServletContextHandler(/) to it, so Vaadin(/ui) takes priority.
+                Handler.Sequence sequence = new Handler.Sequence();
+                sequence.addHandler(createVaadinWebAppContext());
+                server.setHandler(sequence);
+            });
 
-        WebAppContext context = new WebAppContext();
-        context.setContextPath("/");
-
-        // Resolve the webapp/ folder from the classpath (contains the empty ROOT marker).
+            config.routes.get("/new-order", ctx -> {
+                String id = ctx.queryParam("id");
+                System.out.println("Order received with id: " + id);
+            });
+        });
+        
+        javalin.start(8080);
+    }
+    
+    private static WebAppContext createVaadinWebAppContext() {
+        WebAppContext vaadinContext = new WebAppContext();
+        vaadinContext.setContextPath("/ui");
         URL webRoot = Application.class.getResource("/webapp/");
-        context.setBaseResource(ResourceFactory.of(context).newResource(webRoot));
+        vaadinContext.setBaseResource(ResourceFactory.of(vaadinContext).newResource(webRoot));
+        vaadinContext.setThrowUnavailableOnStartupException(true);
+        vaadinContext.setAttribute(MetaInfConfiguration.CONTAINER_JAR_PATTERN, ".*\\.jar|.*/classes/.*");
+        vaadinContext.setConfigurationDiscovered(true);
 
-        // Fail loudly at startup instead of swallowing servlet init errors.
-        context.setThrowUnavailableOnStartupException(true);
-
-        // Use Jetty's default configuration pipeline (includes AnnotationConfiguration).
-        // setConfigurationDiscovered(true) activates it so all @WebServlet/@WebListener
-        // annotations and ServletContainerInitializers are discovered.
-        // Vaadin depends on this for LookupServletContainerInitializer and friends.
-        context.setAttribute(MetaInfConfiguration.CONTAINER_JAR_PATTERN, ".*\\.jar|.*/classes/.*");
-        context.setConfigurationDiscovered(true);
-
-        server.setHandler(context);
-        server.start();
-        System.out.println("Server started → http://localhost:8080");
-        server.join();
+        return vaadinContext;
     }
 
     private static void fixClasspath() {
@@ -55,4 +57,4 @@ public class Application {
             System.setProperty("java.class.path", fixed);
         }
     }
-}
+}
