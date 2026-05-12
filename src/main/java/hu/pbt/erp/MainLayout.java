@@ -1,11 +1,5 @@
-package com.example;
+package hu.pbt.erp;
 
-import com.example.view.CustomersView;
-import com.example.view.DashboardView;
-import com.example.view.EmployeesView;
-import com.example.view.ProductsView;
-import com.example.view.SalesOrdersView;
-import com.example.view.SuppliersView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
@@ -14,6 +8,13 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import hu.pbt.erp.view.CustomersView;
+import hu.pbt.erp.view.DashboardView;
+import hu.pbt.erp.view.EmployeesView;
+import hu.pbt.erp.view.ProductsView;
+import hu.pbt.erp.view.SalesOrdersView;
+import hu.pbt.erp.view.SuppliersView;
 
 public class MainLayout extends AppLayout {
 

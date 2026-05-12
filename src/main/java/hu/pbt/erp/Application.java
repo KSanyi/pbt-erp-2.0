@@ -1,4 +1,4 @@
-package com.example;
+package hu.pbt.erp;
 
 import java.io.File;
 import java.net.URL;

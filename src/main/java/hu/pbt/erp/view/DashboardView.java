@@ -1,6 +1,5 @@
-package com.example.view;
+package hu.pbt.erp.view;
 
-import com.example.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
@@ -10,6 +9,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import hu.pbt.erp.MainLayout;
 
 @PageTitle("Dashboard")
 @Route(value = "", layout = MainLayout.class)
